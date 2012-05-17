@@ -295,7 +295,7 @@ package starling.core
 				] 
 			*/ 
 			sSkewVector[0] = 1; 
-			sSkewVector[1] =  Math.tan(skewY); // Keep in mind sSkewVector[0] through sSkewVector[4] is the first COLUMN. 
+			sSkewVector[1] =  Math.tan(skewY); // Keep in mind sSkewVector[0] through sSkewVector[3] is the first COLUMN. 
 			sSkewVector[4] =  Math.tan(skewX);
 			sSkewVector[5] = 1; 
 			sSkewMatrix.copyRawDataFrom(sSkewVector);
