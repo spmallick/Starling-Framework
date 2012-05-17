@@ -22,6 +22,7 @@ package starling.display
     import starling.events.Event;
     import starling.events.EventDispatcher;
     import starling.events.TouchEvent;
+    import starling.utils.skew;
     
     /** Dispatched when an object is added to a parent. */
     [Event(name="added", type="starling.events.Event")]
@@ -114,6 +115,9 @@ package starling.display
         private var mPivotY:Number;
         private var mScaleX:Number;
         private var mScaleY:Number;
+		private var mSkewX:Number;
+		private var mSkewY:Number;
+		
         private var mRotation:Number;
         private var mAlpha:Number;
         private var mVisible:Boolean;
@@ -138,7 +142,7 @@ package starling.display
                 throw new AbstractClassError();
             }
             
-            mX = mY = mPivotX = mPivotY = mRotation = 0.0;
+            mX = mY = mSkewX = mSkewY = mPivotX = mPivotY = mRotation = 0.0;
             mScaleX = mScaleY = mAlpha = 1.0;            
             mVisible = mTouchable = true;
             mLastTouchTimestamp = -1;
@@ -176,6 +180,10 @@ package starling.display
             {
                 if (mPivotX != 0.0 || mPivotY != 0.0) resultMatrix.translate(-mPivotX, -mPivotY);
                 if (mScaleX != 1.0 || mScaleY != 1.0) resultMatrix.scale(mScaleX, mScaleY);
+				if (mSkewX != 0.0 || mSkewY != 0.0)
+				{
+					skew(resultMatrix, mSkewX, mSkewY);
+				}
                 if (mRotation != 0.0)                 resultMatrix.rotate(mRotation);
                 if (mX != 0.0 || mY != 0.0)           resultMatrix.translate(mX, mY);
                 
@@ -422,6 +430,14 @@ package starling.display
         public function get scaleY():Number { return mScaleY; }
         public function set scaleY(value:Number):void { mScaleY = value; }
         
+		/** The horizontal skew angle in radians */
+		public function get skewX():Number { return mSkewX; }
+		public function set skewX(value:Number):void { mSkewX = value; }
+		
+		/** The vertical skew angle in radians */
+		public function get skewY():Number { return mSkewY; }
+		public function set skewY(value:Number):void { mSkewY = value; }
+		
         /** The rotation of the object in radians. (In Starling, all angles are measured 
          *  in radians.) */
         public function get rotation():Number { return mRotation; }

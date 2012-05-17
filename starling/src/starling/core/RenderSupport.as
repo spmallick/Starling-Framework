@@ -38,6 +38,9 @@ package starling.core
         
         private var mQuadBatches:Vector.<QuadBatch>;
         private var mCurrentQuadBatchID:int;
+		
+		private static var sSkewVector:Vector.<Number> =new <Number>[1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+		private static var sSkewMatrix:Matrix3D = new Matrix3D(sSkewVector);
         
         /** Helper object. */
         private static var sMatrixCoords:Vector.<Number> = new Vector.<Number>(16, true);
@@ -123,6 +126,12 @@ package starling.core
         {
             mModelViewMatrix.prependScale(sx, sy, sz);    
         }
+		
+		/** Prepends an incremental scale change to the modelview matrix. */
+		public function skewMatrix(skewX:Number, skewY:Number):void
+		{
+			prependSkew(mModelViewMatrix, skewX, skewY);    
+		}
         
         /** Prepends translation, scale and rotation of an object to the modelview matrix. */
         public function transformMatrix(object:DisplayObject):void
@@ -161,17 +170,19 @@ package starling.core
             return mMvpMatrix;
         }
         
-        /** Prepends translation, scale and rotation of an object to a custom matrix. */
+        /** Prepends translation, scale, skew and rotation of an object to a custom matrix. */
         public static function transformMatrixForObject(matrix:Matrix3D, object:DisplayObject):void
         {
             var x:Number = object.x; var y:Number = object.y;
             var rotation:Number = object.rotation;
             var scaleX:Number = object.scaleX; var scaleY:Number = object.scaleY;
-            var pivotX:Number = object.pivotX; var pivotY:Number = object.pivotY;
+            var skewX:Number = object.skewX; var skewY:Number = object.skewY; 
+			var pivotX:Number = object.pivotX; var pivotY:Number = object.pivotY;
             
             if (x != 0 || y != 0)           matrix.prependTranslation(x, y, 0.0);
             if (rotation != 0)              matrix.prependRotation(rotation / Math.PI * 180.0, Vector3D.Z_AXIS);
-            if (scaleX != 1 || scaleY != 1) matrix.prependScale(scaleX, scaleY, 1.0);
+			if (skewX != 0 || skewY != 0)   prependSkew(matrix, skewX, skewY);
+			if (scaleX != 1 || scaleY != 1) matrix.prependScale(scaleX, scaleY, 1.0);
             if (pivotX != 0 || pivotY != 0) matrix.prependTranslation(-pivotX, -pivotY, 0.0);
         }
         
@@ -271,5 +282,25 @@ package starling.core
                 Color.getBlue(rgb)  / 255.0,
                 alpha);
         }
+		
+		public static function prependSkew (matrix:Matrix3D, skewX:Number, skewY:Number):void
+		{
+			/* 
+			    Prepends the following matrix 
+			    [ 
+					1				tan(skewX) 		0 		0 
+					tan(skewY) 		1				0 		0 
+					0				0				1		0 
+					0				0				0		1
+				] 
+			*/ 
+			sSkewVector[0] = 1; 
+			sSkewVector[1] =  Math.tan(skewY); // Keep in mind sSkewVector[0] through sSkewVector[4] is the first COLUMN. 
+			sSkewVector[4] =  Math.tan(skewX);
+			sSkewVector[5] = 1; 
+			sSkewMatrix.copyRawDataFrom(sSkewVector);
+			matrix.prepend(sSkewMatrix);
+		}
+		
     }
 }

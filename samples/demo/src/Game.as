@@ -13,6 +13,7 @@ package
     import scenes.TextScene;
     import scenes.TextureScene;
     import scenes.TouchScene;
+	import scenes.SkewScene;
     
     import starling.core.Starling;
     import starling.display.Button;
@@ -65,7 +66,8 @@ package
                 ["Custom hit-test", CustomHitTestScene],
                 ["Movie Clip", MovieScene],
                 ["Benchmark", BenchmarkScene],
-                ["Render Texture", RenderTextureScene]
+                ["Render Texture", RenderTextureScene],
+				["Skew", SkewScene]
             ];
             
             var buttonTexture:Texture = Assets.getTexture("ButtonBig");
