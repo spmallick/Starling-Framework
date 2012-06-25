@@ -162,7 +162,8 @@ package starling.display
             if (mParent) mParent.removeChild(this);
             if (dispose) this.dispose();
         }
-        
+		
+		
         /** Creates a matrix that represents the transformation from the local coordinate system 
          *  to another. If you pass a 'resultMatrix', the result will be stored in this matrix
          *  instead of creating a new object. */ 
@@ -363,11 +364,44 @@ package starling.display
         
         // properties
         
-        /** The transformation matrix of the object relative to its parent. */
+        /** Get the transformation matrix of the object relative to its parent. */
         public function get transformationMatrix():Matrix
         {
             return getTransformationMatrix(mParent); 
         }
+		
+		/** Set the transformation matrix of the object relative to its parent. */
+		public function set transformationMatrix(matrix:Matrix):void{
+			
+			mX = matrix.tx;
+			mY = matrix.ty;
+			
+			var a:Number = matrix.a; 
+			var b:Number = matrix.b; 
+			var c:Number = matrix.c; 
+			var d:Number = matrix.d; 
+			
+			mScaleX = Math.sqrt(a * a + b * b); 
+			if(mScaleX != 0) mRotation = Math.atan2(b,a);
+			else mRotation = 0; // Rotation is not defined when a = b = 0
+			
+			var cosTheta:Number = Math.cos(mRotation); 
+			var sinTheta:Number = Math.sin(mRotation); 
+			
+			mScaleY = d * cosTheta - c * sinTheta; 
+			if(mScaleY != 0) mSkewX = Math.atan2(d * sinTheta + c * cosTheta,  mScaleY); 
+			else mSkewX = 0; // skewX is not defined when scaleY = 0  
+			
+			/* 
+			A 2-D affine transform has only 6 degrees of freedom -- two for translation, 
+			two for scale, one for rotation and one for skew. We are using 2 parameters for skew. 
+			To calculate the parameters from matrix values, one skew can be set to any arbitrary value. 
+			Setting it to 0 makes the math simpler
+			*/ 
+			mSkewY = 0; 
+	
+		}
+		
         
         /** The bounds of the object relative to the local coordinates of the parent. */
         public function get bounds():Rectangle
